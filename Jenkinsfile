@@ -48,7 +48,6 @@ pipeline {
                         firstPytestResult = currentBuild.result
                     }
                     // Append Allure report path to the list
-                    echo '${firstPytestResult}'
                     allureReportPaths.add("${allureReportPath}/")
                 }
             }
