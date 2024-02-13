@@ -9,7 +9,6 @@ def runPytest1(String command) {
     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
         sh command
     }
-def firstPytestResult = currentBuild.result
 }
 pipeline {
     agent any
@@ -39,17 +38,17 @@ pipeline {
                     sleep 5
                     def retryCount = 1
                     def maxRetryCount = 2
-
+                    def firstPytestResult = currentBuild.result
                     runPytest('pytest 3KWM_EN_PUBLIC.py --alluredir=Reports')
                     def retryAttempt = 0
                     while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
                         echo "Retrying the first pytest command, attempt ${retryAttempt}"
-                        currentBuild.result=='SUCCESS'
                         runPytest1('pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports')
                         firstPytestResult = currentBuild.result
                     }
                     // Append Allure report path to the list
+                    echo '${firstPytestResult}'
                     allureReportPaths.add("${allureReportPath}/")
                 }
             }
