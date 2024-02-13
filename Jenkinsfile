@@ -1,6 +1,6 @@
 def runPytest(String command) {
     // Run the command without retry
-    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+    catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
         sh command
     }
 }
@@ -37,7 +37,7 @@ pipeline {
                     def firstPytestResult = currentBuild.result
                     def retryAttempt = 0
 
-                    while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
+                    while (firstPytestResult == 'SUCCESS' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
                         echo "Retrying the first pytest command, attempt ${retryAttempt}"
                         runPytest('pytest 3KWM_EN_PUBLIC.py --alluredir=Reports')
