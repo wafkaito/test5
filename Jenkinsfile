@@ -1,6 +1,6 @@
 def runPytest(String command) {
     // Run the command without retry
-    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+    catchError(buildResult: 'FAILURE') {
         sh command
     }
 }
