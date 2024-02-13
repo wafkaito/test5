@@ -44,6 +44,7 @@ pipeline {
                     def retryAttempt = 0
                     while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
+                        currentBuild.result = 'SUCCESS'
                         echo "Retrying the first pytest command, attempt ${retryAttempt}"
                         runPytest1('pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports')
                         firstPytestResult = currentBuild.result
@@ -67,14 +68,14 @@ pipeline {
             
             // Send Line Notify message based on build result
             script {
-                if (stageResult.result == 'FAILURE') {
+                if (buildResult.result == 'FAILURE') {
                     def message = """KWM
 [🔴 การทดสอบสำเร็จ พบข้อผิดพลาด]
 ${jobName}
 ${url_website}  
 ${Job_url}"""
                     sh "curl $url -H \"Authorization: Bearer $token \" -F \"message= ${message}\""
-                } else if (stageResult.result == 'SUCCESS') {
+                } else if (buildResult.result == 'SUCCESS') {
                     def message = """KWM
 [🟢 การทดสอบสำเร็จ ไม่พบข้อผิดพลาด] 
 ${jobName}
