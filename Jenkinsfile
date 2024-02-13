@@ -26,7 +26,10 @@ pipeline {
                     // Run pytest command and generate test result data
                     sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     def firstPytestResult = currentBuild.result
-                    if (firstPytestResult == 'FAILURE') {
+                    def retryCount = 1
+                    def maxRetryCount = 2
+                    def retryAttempt = 0
+                    while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     }   
                     // Append Allure report path to the list
