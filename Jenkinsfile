@@ -29,7 +29,7 @@ pipeline {
                     def firstPytestResult = currentBuild.result
 
                     // Retry the first pytest command if it failed
-                    if (firstPytestResult == 'FAILURE') {
+                    if (firstPytestResult == 'SUCCESS') {
                         echo 'Retrying the first pytest command'
                         sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     }
