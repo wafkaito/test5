@@ -44,7 +44,6 @@ pipeline {
                     def retryAttempt = 0
                     while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
-                        currentBuild.result = 'SUCCESS'
                         echo "Retrying the first pytest command, attempt ${retryAttempt}"
                         runPytest1('pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports')
                         firstPytestResult = currentBuild.result
