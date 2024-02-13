@@ -25,13 +25,13 @@ pipeline {
                 script {
                     sleep 5
                     // Run the first pytest command
-                    sh 'pytest KWM/3KWM_EN_PUBLIC.py --alluredir=Reports'
+                    sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     def firstPytestResult = currentBuild.result
 
                     // Retry the first pytest command if it failed
                     if (firstPytestResult == 'FAILURE') {
                         echo 'Retrying the first pytest command'
-                        sh 'pytest KWM/3KWM_EN_PUBLIC.py --alluredir=Reports'
+                        sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     }
 
                     // Append Allure report path to the list
