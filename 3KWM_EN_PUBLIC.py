@@ -16,7 +16,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 class TestTest4():
   def setup_method(self, method):
-    self.driver = webdriver.Remote(command_executor='http://192.168.41.66:4445', desired_capabilities=DesiredCapabilities.CHROME)
+    self.driver = webdriver.Remote(command_executor='http://192.168.41.66:4444', desired_capabilities=DesiredCapabilities.CHROME)
     #self.driver = webdriver.Chrome()
     chrome_options = Options()
     chrome_options.add_argument('--headless')  # Enable headless mode
