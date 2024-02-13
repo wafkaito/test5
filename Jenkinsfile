@@ -33,7 +33,7 @@ pipeline {
                     def retryCount = 1
                     def maxRetryCount = 2
 
-                    runPytest('pytest 3KWM_EN_PUBLIC.py --alluredir=Reports')
+                    sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     def firstPytestResult = currentBuild.result
                     def retryAttempt = 0
                     while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
