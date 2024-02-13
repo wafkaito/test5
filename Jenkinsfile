@@ -67,14 +67,14 @@ pipeline {
             
             // Send Line Notify message based on build result
             script {
-                if (currentBuild.result == 'FAILURE') {
+                if (currentBuild.result == 'FAILURE' && currentStage.result == 'FAILURE') {
                     def message = """KWM
 [🔴 การทดสอบสำเร็จ พบข้อผิดพลาด]
 ${jobName}
 ${url_website}  
 ${Job_url}"""
                     sh "curl $url -H \"Authorization: Bearer $token \" -F \"message= ${message}\""
-                } else if (currentBuild.result == 'SUCCESS') {
+                } else if (currentBuild.result == 'SUCCESS' && currentStage.result == 'SUCCESS') {
                     def message = """KWM
 [🟢 การทดสอบสำเร็จ ไม่พบข้อผิดพลาด] 
 ${jobName}
