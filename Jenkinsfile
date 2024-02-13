@@ -1,6 +1,6 @@
 def runPytest(String command) {
     // Run the command without retry
-    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+    catchError(buildResult: 'FAILURE') {
         sh command
     }
 }
@@ -67,14 +67,14 @@ pipeline {
             
             // Send Line Notify message based on build result
             script {
-                if (buildResult.result == 'FAILURE') {
+                if (currentStage.result == 'FAILURE') {
                     def message = """KWM
 [🔴 การทดสอบสำเร็จ พบข้อผิดพลาด]
 ${jobName}
 ${url_website}  
 ${Job_url}"""
                     sh "curl $url -H \"Authorization: Bearer $token \" -F \"message= ${message}\""
-                } else if (buildResult.result == 'SUCCESS') {
+                } else if (currentStage.result == 'SUCCESS') {
                     def message = """KWM
 [🟢 การทดสอบสำเร็จ ไม่พบข้อผิดพลาด] 
 ${jobName}
