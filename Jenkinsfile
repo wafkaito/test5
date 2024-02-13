@@ -11,7 +11,12 @@ pipeline {
         url_website = 'https://www.irplus.in.th/Listed/KWM/home.asp'
         allureReportPath = 'reports'
     }
-
+    def runPytest(String command) {
+    // Run the command without retry
+    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+        sh command
+    }
+}
     stages {
         stage('AllureSetup') {
             steps {
@@ -24,16 +29,17 @@ pipeline {
             steps {
                 script {
                     sleep 5
-                    // Run the first pytest command
-                    sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
+                    def retryCount = 1
+                    def maxRetryCount = 3
+                    runPytest('pytest 3KWM_EN_PUBLIC.py --alluredir=Reports')
                     def firstPytestResult = currentBuild.result
-
-                    // Retry the first pytest command if it failed
-                    if (firstPytestResult == 'SUCCESS') {
-                        echo 'Retrying the first pytest command'
-                        sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
+                    def retryAttempt = 0
+                    while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
+                        retryAttempt++
+                        echo "Retrying the first pytest command, attempt ${retryAttempt}"
+                        runPytest('pytest 3KWM_EN_PUBLIC.py --alluredir=Reports')
+                        firstPytestResult = currentBuild.result
                     }
-
                     // Append Allure report path to the list
                     allureReportPaths.add("${allureReportPath}/")
                 }
