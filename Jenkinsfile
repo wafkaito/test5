@@ -24,10 +24,10 @@ pipeline {
             steps {
                 sleep 5
                     // Run pytest command and generate test result data
-                    sh 'pytest KWM/3KWM_EN_PUBLIC.py --alluredir=Reports'
+                    sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     def firstPytestResult = currentBuild.result
                     if (firstPytestResult == 'FAILURE') {
-                        sh 'pytest KWM/3KWM_EN_PUBLIC.py --alluredir=Reports'
+                        sh 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     }   
                     // Append Allure report path to the list
                     script {
