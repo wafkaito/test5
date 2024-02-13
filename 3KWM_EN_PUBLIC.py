@@ -60,7 +60,7 @@ class TestTest4():
         time.sleep(1)
         self.driver.close()
       pass
-      self.driver.switch_to.window(self.vars["window_handles"][0])
+      # self.driver.switch_to.window(self.vars["window_handles"][0])
       time.sleep(1.5)
 
       self.vars["window_handles"] = self.driver.window_handles
