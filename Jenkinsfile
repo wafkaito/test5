@@ -9,6 +9,7 @@ def runPytest1(String command) {
     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
         sh command
     }
+def firstPytestResult = currentBuild.result
 }
 pipeline {
     agent any
@@ -40,7 +41,6 @@ pipeline {
                     def maxRetryCount = 2
 
                     runPytest('pytest 3KWM_EN_PUBLIC.py --alluredir=Reports')
-                    def firstPytestResult = currentBuild.result
                     def retryAttempt = 0
                     while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
