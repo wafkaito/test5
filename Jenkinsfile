@@ -29,39 +29,27 @@ pipeline {
                     def pytestCommand = 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     def pytestCommand1 = 'pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports'
 
-                    // Variable to track the overall result of the pipeline
-                    def pipelineResult = 'FAILURE'
+                    // Variable to track whether any retry was successful
+                    def anyRetrySuccess = false
 
                     // First pytest attempt without catchError
-                    script {
-                        try {
-                            // Try to run the pytest command
-                            sh pytestCommand
-                            // If it succeeds, update the pipeline result
-                            pipelineResult = 'SUCCESS'
-                        } catch (Exception e) {
-                            // Catch the exception if pytest fails
-                            echo "First pytest attempt failed: ${e}"
-                        }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                        sh pytestCommand
                     }
-                    echo "First pytest attempt result: ${pipelineResult}"
+                    def firstPytestResult = currentBuild.result
+                    echo "First pytest attempt result: ${firstPytestResult}"
 
                     // Retry logic
                     def retryAttempt = 0
-                    while (pipelineResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
+                    while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
                         echo "Retrying the pytest command, attempt ${retryAttempt}"
-                        script {
-                            try {
-                                // Try to run the pytest command in the loop
-                                sh pytestCommand1
-                                // If it succeeds, update the pipeline result and break the loop
-                                pipelineResult = 'SUCCESS'
-                                break
-                            } catch (Exception e) {
-                                // Catch the exception if pytest fails in the loop
-                                echo "Retry attempt failed: ${e}"
-                            }
+                        sh pytestCommand1
+                        firstPytestResult = currentBuild.result
+                        echo "Retry attempt result: ${firstPytestResult}"
+                        if (firstPytestResult == 'SUCCESS') {
+                            anyRetrySuccess = true
+                            break
                         }
                     }
                     // Append Allure report path to the list
