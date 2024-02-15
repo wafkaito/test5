@@ -1,9 +1,3 @@
-def runPytest(String command) {
-    // Run the command without retry
-    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-        sh command
-    }
-}
 pipeline {
     agent any
     environment {
