@@ -33,7 +33,9 @@ pipeline {
                     def anyRetrySuccess = false
 
                     // First pytest attempt without catchError
-                    sh pytestCommand
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                        sh pytestCommand
+                    }
                     def firstPytestResult = currentBuild.result
                     echo "First pytest attempt result: ${firstPytestResult}"
 
