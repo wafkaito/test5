@@ -52,6 +52,8 @@ pipeline {
                             break
                         }
                     }
+                    currentBuild.result == 'SUCCESS'
+                    firstPytestResult = currentBuild.result
                     echo "First pytest attempt result: ${firstPytestResult}"
                     // Append Allure report path to the list
                     allureReportPaths.add("${allureReportPath}/")
