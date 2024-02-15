@@ -42,6 +42,7 @@ pipeline {
                     }
                     // Append Allure report path to the list
                     allureReportPaths.add("${allureReportPath}/")
+                }
             }
         }
     }
