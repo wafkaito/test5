@@ -29,31 +29,43 @@ pipeline {
                     def pytestCommand = 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
                     def pytestCommand1 = 'pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports'
 
-                    // Variable to track whether any retry was successful
-                    def anyRetrySuccess = false
+                    // Variable to track the overall result of the pipeline
+                    def pipelineResult = 'FAILURE'
 
                     // First pytest attempt without catchError
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                        sh pytestCommand
+                    script {
+                        try {
+                            // Run the pytest command
+                            sh pytestCommand
+                            // If the command succeeds, set the pipeline result to 'SUCCESS'
+                            pipelineResult = 'SUCCESS'
+                        } catch (Exception e) {
+                            // Handle the exception (e.g., print an error message)
+                            echo "First pytest attempt failed: ${e}"
+                            // Keep the pipeline result as 'FAILURE'
+                        }
                     }
-                    def firstPytestResult = currentBuild.result
-                    echo "First pytest attempt result: ${firstPytestResult}"
+                    echo "First pytest attempt result: ${pipelineResult}"
 
                     // Retry logic
                     def retryAttempt = 0
-                    while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
+                    while (pipelineResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
                         echo "Retrying the pytest command, attempt ${retryAttempt}"
-                        sh pytestCommand1
-                        firstPytestResult = currentBuild.result
-                        echo "Retry attempt result: ${firstPytestResult}"
-                        if (firstPytestResult == 'SUCCESS') {
-                            anyRetrySuccess = true
-                            break
+                        script {
+                            try {
+                                // Run the pytest command in the retry loop
+                                sh pytestCommand1
+                                // If the command succeeds, set the pipeline result to 'SUCCESS' and break the loop
+                                pipelineResult = 'SUCCESS'
+                                break
+                            } catch (Exception e) {
+                                // Handle the exception (e.g., print an error message)
+                                echo "Retry attempt failed: ${e}"
+                                // Keep the pipeline result as 'FAILURE'
+                            }
                         }
                     }
-                    currentBuild.result = 'SUCCESS'
-                    echo "Retry attempt result: ${currentBuild.result}"
                     // Append Allure report path to the list
                     allureReportPaths.add("${allureReportPath}/")
                 }
