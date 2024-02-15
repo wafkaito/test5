@@ -45,6 +45,7 @@ pipeline {
                         retryAttempt++
                         echo "Retrying the pytest command, attempt ${retryAttempt}"
                         sh pytestCommand1
+                        currentBuild.result == 'SUCCESS'
                         firstPytestResult = currentBuild.result
                         echo "Retry attempt result: ${firstPytestResult}"
                         if (firstPytestResult == 'SUCCESS') {
