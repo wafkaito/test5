@@ -26,57 +26,22 @@ pipeline {
                     sleep 5
                     def retryCount = 1
                     def maxRetryCount = 3
-                    def pytestCommand = 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
-                    def pytestCommand1 = 'pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports'
 
-                    // Variable to track the overall result of the pipeline
-                    def pipelineResult = 'FAILURE'
-
-                    // First pytest attempt without catchError
-                    script {
-                        try {
-                            // Run the pytest command and capture the exit code
-                            def exitCode = sh(script: pytestCommand, returnStatus: true)
-                            if (exitCode == 0) {
-                                // If the exit code is 0, consider it as SUCCESS
-                                pipelineResult = 'SUCCESS'
-                            } else {
-                                // If the exit code is non-zero, treat it as FAILURE
-                                echo "First pytest attempt failed with exit code ${exitCode}"
-                            }
-                        } catch (Exception e) {
-                            // Handle the exception (e.g., print an error message)
-                            echo "First pytest attempt failed: ${e}"
-                        }
-                    }
-                    echo "First pytest attempt result: ${pipelineResult}"
+                    // Variable to track whether any retry was successful
+                    def anyRetrySuccess = false
 
                     // Retry logic
                     def retryAttempt = 0
-                    while (pipelineResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
+                    while (retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
-                        echo "Retrying the pytest command, attempt ${retryAttempt}"
-                        script {
-                            try {
-                                // Run the pytest command in the retry loop and capture the exit code
-                                def exitCode = sh(script: pytestCommand1, returnStatus: true)
-                                if (exitCode == 0) {
-                                    // If the exit code is 0, consider it as SUCCESS and break the loop
-                                    pipelineResult = 'SUCCESS'
-                                    break
-                                } else {
-                                    // If the exit code is non-zero, treat it as FAILURE
-                                    echo "Retry attempt failed with exit code ${exitCode}"
-                                }
-                            } catch (Exception e) {
-                                // Handle the exception (e.g., print an error message)
-                                echo "Retry attempt failed: ${e}"
-                            }
+                        echo "Retrying the first pytest command, attempt ${retryAttempt}"
+                        if (runPytest('pytest 3KWM_EN_PUBLIC.py --alluredir=Reports') == 0) {
+                            anyRetrySuccess = true
+                            break
                         }
                     }
                     // Append Allure report path to the list
                     allureReportPaths.add("${allureReportPath}/")
-                }
             }
         }
     }
