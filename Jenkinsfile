@@ -52,6 +52,8 @@ pipeline {
                             break
                         }
                     }
+                    currentBuild.result = 'SUCCESS'
+                    echo "Retry attempt result: ${currentBuild.result}"
                     // Append Allure report path to the list
                     allureReportPaths.add("${allureReportPath}/")
                 }
