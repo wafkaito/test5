@@ -35,14 +35,18 @@ pipeline {
                     // First pytest attempt without catchError
                     script {
                         try {
-                            // Run the pytest command
-                            sh pytestCommand
-                            // If the command succeeds, set the pipeline result to 'SUCCESS'
-                            pipelineResult = 'SUCCESS'
+                            // Run the pytest command and capture the exit code
+                            def exitCode = sh(script: pytestCommand, returnStatus: true)
+                            if (exitCode == 0) {
+                                // If the exit code is 0, consider it as SUCCESS
+                                pipelineResult = 'SUCCESS'
+                            } else {
+                                // If the exit code is non-zero, treat it as FAILURE
+                                echo "First pytest attempt failed with exit code ${exitCode}"
+                            }
                         } catch (Exception e) {
                             // Handle the exception (e.g., print an error message)
                             echo "First pytest attempt failed: ${e}"
-                            // Keep the pipeline result as 'FAILURE'
                         }
                     }
                     echo "First pytest attempt result: ${pipelineResult}"
@@ -54,15 +58,19 @@ pipeline {
                         echo "Retrying the pytest command, attempt ${retryAttempt}"
                         script {
                             try {
-                                // Run the pytest command in the retry loop
-                                sh pytestCommand1
-                                // If the command succeeds, set the pipeline result to 'SUCCESS' and break the loop
-                                pipelineResult = 'SUCCESS'
-                                break
+                                // Run the pytest command in the retry loop and capture the exit code
+                                def exitCode = sh(script: pytestCommand1, returnStatus: true)
+                                if (exitCode == 0) {
+                                    // If the exit code is 0, consider it as SUCCESS and break the loop
+                                    pipelineResult = 'SUCCESS'
+                                    break
+                                } else {
+                                    // If the exit code is non-zero, treat it as FAILURE
+                                    echo "Retry attempt failed with exit code ${exitCode}"
+                                }
                             } catch (Exception e) {
                                 // Handle the exception (e.g., print an error message)
                                 echo "Retry attempt failed: ${e}"
-                                // Keep the pipeline result as 'FAILURE'
                             }
                         }
                     }
