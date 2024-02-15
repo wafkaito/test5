@@ -33,7 +33,7 @@ pipeline {
                     def retryCount = 1
                     def maxRetryCount = 3
                     def pytestCommand = 'pytest 3KWM_EN_PUBLIC.py --alluredir=Reports'
-                    def pytestCommand = 'pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports'
+                    def pytestCommand1 = 'pytest 3KWM_EN_PUBLIC1.py --alluredir=Reports'
 
                     // Variable to track whether any retry was successful
                     def anyRetrySuccess = false
@@ -48,7 +48,7 @@ pipeline {
                     while (firstPytestResult == 'FAILURE' && retryAttempt < retryCount && retryAttempt < maxRetryCount) {
                         retryAttempt++
                         echo "Retrying the pytest command, attempt ${retryAttempt}"
-                        sh pytestCommand
+                        sh pytestCommand1
                         firstPytestResult = currentBuild.result
                         echo "Retry attempt result: ${firstPytestResult}"
                         if (firstPytestResult == 'SUCCESS') {
